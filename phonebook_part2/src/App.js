@@ -9,8 +9,10 @@ const App = () => {
     { name: 'Dan Abramov', number: '12-43-234345' },
     { name: 'Mary Poppendieck', number: '39-23-6423122' }
   ]) 
-  const [ newName, setNewName ] = useState('')
+  const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [newSearch, setNewSearch] = useState('')
+  const [toShow, setToShow] = useState(persons)
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -37,10 +39,27 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
+  const handleSearchChange = (event) => {
+    //here occurs the search logic
+    //must
+    setNewSearch(event.target.value)
+    const string = newSearch
+    if (string.length === 0) {
+      setToShow(persons)
+    } else {
+      const shouldShow = persons.filter(person => person.name.includes(string))
+      setToShow(shouldShow)
+    }
+  }
+
+
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+        filter shown with: <input value={newSearch} onChange={handleSearchChange}/>
+      </div>
       <form onSubmit={addPerson}>
         <div>
           Name: <input value={newName} onChange={handleNameChange}/>
@@ -54,7 +73,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
         <div>
-          {persons.map((person, i) => 
+          {toShow.map((person, i) => 
             <Person key = {i} person = {person}/>
           )}
         </div>
