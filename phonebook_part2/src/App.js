@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
-import Person from './components/Person'
+import PersonForm from './components/PersonForm'
+import Phonebook from './components/Phonebook'
+import SearchField from './components/SearchField'
 
 const App = () => {
   
@@ -44,10 +46,10 @@ const App = () => {
     //must
     setNewSearch(event.target.value)
     const string = newSearch
-    if (string.length === 0) {
+    if (string === '') {
       setToShow(persons)
     } else {
-      const shouldShow = persons.filter(person => person.name.includes(string))
+      const shouldShow = persons.filter(person => person.name.slice(0,string.length).includes(string))
       setToShow(shouldShow)
     }
   }
@@ -57,26 +59,16 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with: <input value={newSearch} onChange={handleSearchChange}/>
-      </div>
-      <form onSubmit={addPerson}>
-        <div>
-          Name: <input value={newName} onChange={handleNameChange}/>
-        </div>
-        <div>
-          Number: <input value = {newNumber} onChange = {handleNumberChange}/>
-        </div>
-        <div>
-          <button type="submit">Add person</button>
-        </div>
-      </form>
+      <SearchField newSearch = {newSearch} onChange = {handleSearchChange}/>
+      <h3>Add a new person to the phonebook</h3>
+      <PersonForm onSubmit ={addPerson} 
+      newName = {newName} 
+      newNumber = {newNumber} 
+      onChangeName ={handleNameChange}
+      onChangeNumber = {handleNumberChange} 
+      />
       <h2>Numbers</h2>
-        <div>
-          {toShow.map((person, i) => 
-            <Person key = {i} person = {person}/>
-          )}
-        </div>
+        <Phonebook persons = {toShow}/>
     </div>
   )
 }
