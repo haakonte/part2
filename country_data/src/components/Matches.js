@@ -1,8 +1,12 @@
 import React from 'react'
+import DisplayCountry from './DisplayCountry'
+import ShowCountry from './ShowCountry'
 
 
 const Matches = ({matches}) => {
   //getting a list of countries which match the search queries
+  
+  
   if (matches.length > 10) {
     return (
       <div>
@@ -13,27 +17,14 @@ const Matches = ({matches}) => {
     return (
       <div>
         {matches.map((country,i) => 
-          <p key={i}>{country.name}</p>
+          <ShowCountry key={i} country = {country} />
         )}
       </div>
     )
   } else if (matches.length === 1) {
     const country = {...matches[0]}
     return (
-      <div>
-        <h2>{country.name}</h2>
-        <p>Capital {country.capital}</p>
-        <p>Population {country.population}</p>
-        <h3>Languages</h3>
-        <ul>
-          {country.languages.map((language,i) => 
-            <li key={i}>{language.name}</li>
-          )}
-        </ul>
-        <div>
-          <img src={country.flag} height='100' alt=''/>
-        </div>
-      </div>
+      <DisplayCountry country={country}/>
     )
   } else {
     return (
