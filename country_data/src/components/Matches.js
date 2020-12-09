@@ -6,7 +6,6 @@ import ShowCountry from './ShowCountry'
 const Matches = ({matches}) => {
   //getting a list of countries which match the search queries
   
-  
   if (matches.length > 10) {
     return (
       <div>
