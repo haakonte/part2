@@ -1,7 +1,8 @@
 import React from 'react'
 import Person from './Person'
 
-const Phonebook = ({persons}) => {
+const Phonebook = ({persons, ids}) => {
+  
   return (
     <div>
       {persons.map((p, i) => 

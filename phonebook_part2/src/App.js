@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import PersonForm from './components/PersonForm'
-import Phonebook from './components/Phonebook'
+import Person from './components/Person'
 import SearchField from './components/SearchField'
-import axios from 'axios'
+import personService from './components/Service'
 
 const App = () => {
   
@@ -13,16 +13,13 @@ const App = () => {
   const [toShow, setToShow] = useState(persons)
 
   useEffect(() => {
-    console.log('started effect')
-    axios
-      .get("http://localhost:3001/persons")
-      .then(response => {
-        console.log(response.data)
-        setPersons(response.data)
-        setToShow(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
+        setToShow(initialPersons)
       })
   }, [])
-
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -32,14 +29,37 @@ const App = () => {
     }
     const inPersons = persons.filter(person => person.name === newPerson.name).length > 0
     if (!inPersons) {
-      setPersons(persons.concat(newPerson))
-      setNewName('')
-      setNewNumber('')
+      personService
+        .create(newPerson)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setToShow(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
     } else {
       alert(newName + ' is already in the phonebook')
     }
-    
   }
+
+  const deletePerson = (id) => {
+    const obj_arr = persons.filter(person => person.id === id)
+    const person = {...obj_arr[0]}
+    const result = window.confirm(`Delete ${person.name} ?`)
+    if (result) {
+      personService
+        .remove(id)
+        .then(ignored => {
+          const newPersons = persons.filter(person => person.id !== id)
+          setPersons(newPersons)
+          setToShow(newPersons)
+        })
+        .catch(error => {
+          console.log("Could not delete object")
+        })
+    }
+  }
+
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -62,12 +82,10 @@ const App = () => {
     }
   }
 
-
-
   return (
     <div>
       <h2>Phonebook</h2>
-      <SearchField newSearch = {newSearch} onChange = {handleSearchChange}/>
+      <SearchField newSearch = {newSearch} onChange = {handleSearchChange} displayAll = {() => setToShow(persons)}/>
       <h3>Add a new person to the phonebook</h3>
       <PersonForm onSubmit ={addPerson} 
       newName = {newName} 
@@ -76,7 +94,12 @@ const App = () => {
       onChangeNumber = {handleNumberChange} 
       />
       <h2>Numbers</h2>
-        <Phonebook persons = {toShow}/>
+        {/* <Phonebook persons = {toShow} ids = {toShow.map(person => person.id)}/> */}
+        <div>
+          {toShow.map((person, i) => 
+            <Person key={i+1} person={person} onDelete = {() => deletePerson(person.id)}/>
+          )}
+        </div>
     </div>
   )
 }

@@ -24,7 +24,6 @@ const ShowCountry = ({country}) => {
       </div>
     )
   }
-  
 
 }
 
