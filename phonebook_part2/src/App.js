@@ -42,8 +42,7 @@ const App = () => {
         })
     } else {
       const replace = window
-                        .confirm(`${newPerson.name} is already in the phonebook, 
-                        replace the old number with a new one?`)
+                        .confirm(`${newPerson.name} is already in the phonebook, replace the old number with a new one?`)
       if (replace) {
         const oldPerson = persons.find(person => person.name === newPerson.name)
         const newPerson_updated = {...oldPerson, number: newPerson.number}
@@ -54,6 +53,8 @@ const App = () => {
             console.log(persons_copy)
             setPersons(persons_copy)
             setToShow(persons_copy)
+            setNewName('')
+            setNewNumber('')
           })
       }
     }
