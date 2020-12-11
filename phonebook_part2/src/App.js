@@ -37,8 +37,25 @@ const App = () => {
           setNewName('')
           setNewNumber('')
         })
+        .catch(error => {
+          console.log('Was unable to create person')
+        })
     } else {
-      alert(newName + ' is already in the phonebook')
+      const replace = window
+                        .confirm(`${newPerson.name} is already in the phonebook, 
+                        replace the old number with a new one?`)
+      if (replace) {
+        const oldPerson = persons.find(person => person.name === newPerson.name)
+        const newPerson_updated = {...oldPerson, number: newPerson.number}
+        personService
+          .update(newPerson_updated.id, newPerson_updated)
+          .then(returnedPerson => {
+            const persons_copy = persons.map(person => person.id === newPerson_updated.id ? returnedPerson : person)
+            console.log(persons_copy)
+            setPersons(persons_copy)
+            setToShow(persons_copy)
+          })
+      }
     }
   }
 
