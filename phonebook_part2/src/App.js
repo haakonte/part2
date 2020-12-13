@@ -3,6 +3,7 @@ import PersonForm from './components/PersonForm'
 import Person from './components/Person'
 import SearchField from './components/SearchField'
 import personService from './components/Service'
+import Notification from './components/Notification'
 
 const App = () => {
   
@@ -11,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
   const [toShow, setToShow] = useState(persons)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -36,9 +38,15 @@ const App = () => {
           setToShow(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+          setErrorMessage(
+            `${newPerson.name} was added to the phonebook`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 3000)
         })
         .catch(error => {
-          console.log('Was unable to create person')
+          console.log('Could not do it')
         })
     } else {
       const replace = window
@@ -50,11 +58,31 @@ const App = () => {
           .update(newPerson_updated.id, newPerson_updated)
           .then(returnedPerson => {
             const persons_copy = persons.map(person => person.id === newPerson_updated.id ? returnedPerson : person)
-            console.log(persons_copy)
             setPersons(persons_copy)
             setToShow(persons_copy)
             setNewName('')
             setNewNumber('')
+            setErrorMessage(
+              `${newPerson_updated.name}´s number was updated`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 3000)
+          }).catch(error => {
+            setErrorMessage(
+              `Information on ${newPerson_updated.name} was not found, it has been removed from the server`
+            )
+            setNewName('')
+            setNewNumber('')
+            personService
+              .getAll()
+              .then(initialPersons => {
+                setPersons(initialPersons)
+                setToShow(initialPersons)
+              })
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 3000)
           })
       }
     }
@@ -73,7 +101,20 @@ const App = () => {
           setToShow(newPersons)
         })
         .catch(error => {
-          console.log("Could not delete object")
+          setErrorMessage(
+            `Information on ${person.name} was not found, it has been removed from the server`
+          )
+          setNewName('')
+          setNewNumber('')
+          personService
+            .getAll()
+            .then(initialPersons => {
+              setPersons(initialPersons)
+              setToShow(initialPersons)
+            })
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 3000)
         })
     }
   }
@@ -105,6 +146,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <SearchField newSearch = {newSearch} onChange = {handleSearchChange} displayAll = {() => setToShow(persons)}/>
       <h3>Add a new person to the phonebook</h3>
+      <Notification message = {errorMessage}/>
       <PersonForm onSubmit ={addPerson} 
       newName = {newName} 
       newNumber = {newNumber} 
